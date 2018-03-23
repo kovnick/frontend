@@ -19,7 +19,6 @@
     &__image {
         width: $l*10;
         height: $l*10;
-        flex: none;
         background-color: $trans-low;
         @include boxshadow;
 
@@ -28,6 +27,7 @@
         }
     }
     &__info {
+        flex-grow: 1;
         @include medium {
           margin-left: $l * 2;
         }
@@ -107,8 +107,8 @@
         align-items: center;
         justify-content: center;
         font-size: $font-default;
-        flex: 1;
         margin: $l 0;
+        flex-wrap: wrap;
 
         @include medium {
             margin-top: 0;
@@ -126,8 +126,6 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: flex-end;
-        flex: 1;
         margin-top: $l*2;
 
         @include medium {
@@ -137,11 +135,25 @@
     &__button {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
+        margin-left: $l;
+        align-items: center;
 
-        @include medium {
-            margin-left: $l;
+        &:first-child {
+            margin-left: 0;
         }
+        &.active {
+            .icon {
+                fill: currentColor;
+            }
+        }
+        .icon {
+            width: 1.2rem;
+            height: 1.2rem;
+            fill: transparent;
+            stroke: currentColor;
+            margin-right: $l*0.75;
+        }
+
     }
     &__link {
         display: inline-flex;
@@ -158,6 +170,16 @@
             height: $l*2;
             fill: $font-color;
             margin-right: 0.5rem;
+        }
+
+        &.download {
+            display: none;
+            visibility: hidden;
+
+            @include medium {
+                display: flex;
+                visibility: visible;
+            }
         }
     }
     &__tabs {

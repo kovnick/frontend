@@ -2,6 +2,7 @@ import * as React from "react";
 import { FadeImage } from "components/misc/FadeImage";
 import Link from "redux-first-router-link";
 import Icon, { GLYPHS } from "components/misc/Icon";
+import { connect } from "react-redux";
 import { toSimple, toPlayerTab } from "lib/store/actions";
 import { formatDuration, getWinChance, getKillRatio } from "lib/stats";
 import * as domain from "lib/domain";
@@ -13,7 +14,7 @@ const isActive = (expected, actual) => (expected === actual ? "playerheader__tab
 const exportButton = player => {
     const href = `data:application/json;base64,${btoa(JSON.stringify(player))}`;
     return (
-        <a className="playerheader__link" download={`${player.name}.json`} href={href}>
+        <a className="playerheader__link download" download={`${player.name}.json`} href={href}>
             <Icon glyph={GLYPHS.DOWNLOAD} /> Download as JSON
         </a>
     );
@@ -66,10 +67,10 @@ class PlayerHeader extends React.Component<any, any> {
                                 <Icon glyph={GLYPHS.ESL} /> ESL
                             </a>
                             {exportButton(this.props)}
-                            {/* <span className="playerheader__divider">|</span>
+                            <span className="playerheader__divider">|</span>
                             <Link className="playerheader__link" to={toSimple(this.props.id)}>
                                 Simple View
-                            </Link> */}
+                            </Link>
                         </div>
                     </div>
                     <div className="playerheader__buttons">
@@ -82,9 +83,23 @@ class PlayerHeader extends React.Component<any, any> {
                                 onClick={() => this.props.updatePlayer(this.props.id)}
                                 className="button playerheader__button button--outline--accent"
                             >
-                                update
+                                <Icon glyph={GLYPHS.REFRESH} /> update
                             </button>
                         )}
+                        {this.props.isFavorite
+                            ? <button
+                                  onClick={() => this.props.unfavoritePlayer(this.props.id)}
+                                  className="button playerheader__button button--outline--primary active"
+                              >
+                                <Icon glyph={GLYPHS.STAR} /> favorite
+                              </button>
+                            : <button
+                                  onClick={() => this.props.favoritePlayer(this.props.id)}
+                                  className="button playerheader__button button--outline--subtile"
+                              >
+                                <Icon glyph={GLYPHS.STAR} /> favorite
+                              </button>
+                        }
                     </div>
                 </div>
                 <div className="playerheader__tabs">
@@ -114,4 +129,20 @@ class PlayerHeader extends React.Component<any, any> {
     }
 }
 
-export default PlayerHeader;
+const mapStateToProps = state => {
+    const { isFavorite, favorites, loading, location: { payload } } = state;
+
+    return {
+        loading,
+        isFavorite: favorites.includes(payload.id),
+        favorites
+    };
+};
+const mapDispatchtoProps = (dispatch, state) => {
+    return {
+        favoritePlayer: id => dispatch({ type: "FAV_PLAYER", payload: id }),
+        unfavoritePlayer: id => dispatch({ type: "UNFAV_PLAYER", payload: id })
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchtoProps)(PlayerHeader);
